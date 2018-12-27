@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+  <title>demo1</title>
+  <style>
+    .active-color{
+      width: 100px;
+      height: 100px;
+      background: rgb(0, 0, 255);
+    }
+    .active-color-red{
+      background: red;
+    }
+    .active-text{
+      color:#fff;
+      text-align: center;
+      line-height: 100px;
+    }
+    .active-color:hover{
+      font-size: 18px;
+      color: #999;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <div id="v1">
+    <h1>1.开始</h1>
+    <h1>site: {{site}}</h1>
+    <h1>{{msg}}</h1>
+    <h1>url: {{url}}</h1>
+    <h1>Alexa: {{alexa}}</h1>
+    <h1>{{details()}}</h1>
+  </div>
+  <hr>
+  <div id="v2">
+    <h1>2.数据绑定</h1>
+    <h2>{{msg2}}</h2>
+    <!-- 用户输入数据，实现数据双向绑定 -->
+    <input v-model="msg2" />
+  </div>
+  <hr>
+  <div id="v3">
+    <h1>3.事件绑定</h1>
+    <h2>{{msg3}}</h2>
+    <!-- 绑定点击事件 -->
+    <button v-on:click="reverseMsg">反转</button>
+  </div>
+  <hr>
+  <div id="v4">
+    <h1>4.过滤器</h1>
+    <!-- 过滤器测试 -->
+    <!-- 带参数过滤器 filterA('arg1', 'arg2') msg4将作为第1个参数,arg1作为第2个参数以此类推 -->
+    <h2>{{ msg4 | filterA('hello world') | filterB }}</h2>
+    <input type="text" v-model="msg4">
+  </div>
+  <hr>
+  <div id="v5">
+    <h1>5.缩写</h1>
+    <!-- v-bind 缩写 -->
+    <a :href="url" target="_blank">不懂就点这里</a>
+    <!-- v-on 缩写 -->
+    <button @click="clickMe">点我试试</button>
+  </div>
+  <hr>
+  <div id="v6">
+    <h1>6.if else条件</h1>
+    <input type="text" v-model="hello">
+    <template v-if="show">
+      <div v-if="hello > 10">hello world</div>
+      <div v-else-if="hello == 10">hello bike</div>
+      <div v-else>no hello</div>
+    </template>
+  </div>
+  <hr>
+  <div id="v7">
+    <h1>7.循环</h1>
+    <ol>
+      <li v-for="code in codes">
+        编程语言：<a :href="code.url" target="_blank">{{code.code}}</a>，作者：{{code.name}}
+      </li>
+    </ol>
+    <h1>模板循环</h1>
+    <ul>
+      <template v-for="code in codes">
+        <li><a :href="code.url" target="_blank">{{code.code}}</a></li>
+      </template>
+    </ul>
+    <h1>对象迭代</h1>
+    <ul>
+      <li v-for="value in obj">
+        {{value}}
+      </li>
+    </ul>
+    <ol>
+      <!-- 第一个参数为值，第二个参数为健值，第三个参数为索引 -->
+      <li v-for="(val, key, index) in obj">
+        {{index}}-{{key}}: {{val}}
+      </li>
+    </ol>
+    <h1>整数迭代</h1>
+    <ul>
+      <li v-for="n in count">
+        {{n}}
+      </li>
+    </ul>
+  </div>
+  <hr>
+  <div id="v8">
+    <h1>8.计算属性</h1>
+    <input type="text" v-model="message">
+    <div>message: {{message}}</div>
+    <div>reverseMessage: {{reverseMessage}}</div>
+    <div>reverseReverseMessage: {{reverseMessage2()}}</div>
+    <p>
+      <b>computed vs methods</b><br>
+      我们可以使用 methods 来替代 computed，效果上两个都是一样的，但是 computed 是基于它的依赖缓存，只有相关依赖发生改变时才会重新取值。而使用 methods ，在重新渲染的时候，函数总会重新调用执行
+    </p>
+    <h2>computed 属性默认只有 getter ，不过在需要时你也可以提供一个 setter </h2>
+    <div>{{prefix}}-{{suffix}}</div>
+    <div>{{name}}</div>
+  </div>
+  <hr>
+  <div id="v9">
+    <h1>9.监听属性</h1>
+    <div>
+        通过 watch 来响应数据的变化
+      <p>计数：{{counter}}</p>
+      <button @click="counter++" style="font-size:25px;">加</button>
+      <button @click="counter--" style="font-size:25px;">减</button>
+      <p v-if="show">计数器变化：{{oval}}->{{nval}}</p>
+    </div>
+    <div>
+      <h2>距离换算</h2>
+      米：<input type="text" v-model="meter">
+      千米：<input type="text" v-model="kilometer"><br>
+      <p>{{calc}}</p>
+    </div>
+    <div>
+      <h2>简单购物车</h2>
+      <table>
+        <tr>
+          <th>序号</th>
+          <th>商品名称</th>
+          <th>商品价格（元）</th>
+          <th>购买数量</th>
+          <th>操作</th>
+        </tr>
+        <tr v-for="goods in goodsList">
+          <td>{{goods.num}}</td>
+          <td>{{goods.name}}</td>
+          <td>{{goods.price}}</td>
+          <td>
+            <button :disabled="goods.count === 0" @click="goods.count--">-</button>
+            {{goods.count}}
+            <button @click="goods.count++">+</button>
+          </td>
+          <td><button @click="goods.count=0">移除</button></td>
+        </tr>
+      </table>
+      <p>总额：{{totalPrice()}}元</p>
+    </div>
+  </div>
+  <hr>
+  <div id="v10">
+    <h1>10.样式绑定</h1>
+    <div>
+      <h2>单属性样式绑定</h2>
+      <div :class="{'active-color': activeColor}"></div>
+      <h2>多属性样式绑定（根据style样式加载顺序，后加载的样式会覆盖先加载的）</h2>
+      <div :class="activeColorObject"></div>
+      <h2>绑定返回对象的计算属性</h2>
+      <div :class="bindComputedColor">hello world</div>
+      <h2>数组绑定多样式</h2>
+      <div :class="['active-color', 'active-text']">数组绑定</div>
+      <h2>内联样式</h2>
+      R(0,255) <input type="number" v-model="red">
+      G(0,255) <input type="number" v-model="green">
+      B(0,255) <input type="number" v-model="blue"><br>
+      width(10,300): <input type="number" v-model="width">
+      height(10,300): <input type="number" v-model="height">
+      <div :style="customStyle"></div>
+    </div>
+  </div>
+  <hr>
+  <!-- built files will be auto injected -->
+</body>
+
+<script>
+  // Vue 实例被创建时，它向 Vue 的响应式系统中加入了其 data 对象中能找到的所有的属性。当这些属性的值发生改变时，html 视图将也会产生相应的变化
+  var data = {
+    site: '菜鸟教程',
+    url: 'www.runoob.com',
+    alexa: '10000',
+    msg: 'hello world'
+  };
+  var v1 = new Vue({
+    el: '#v1',
+    data: data,
+    methods: {
+      details: function () {
+        return this.site + ' - 学的不仅是技术，更是梦想！';
+      }
+    }
+  });
+
+  document.write(v1.site === data.site);
+  document.write("<br>")
+  v1.site = 'Runoob'
+  document.write(data.site + '<br>');
+
+  data.alexa = 1234
+  document.write(v1.alexa) // 1234
+  document.write('<br>')
+
+  // Vue 实例还提供了一些有用的实例属性与方法。它们都有前缀 $，以便与用户定义的属性区分开来
+  document.write(v1.$data === data)
+  document.write('<br>')
+  document.write(v1.$el === document.getElementById('vue_det'))
+
+  // 数据双向绑定测试
+  var v2 = new Vue({
+    el: '#v2',
+    data: {
+      msg2: '双向绑定'
+    }
+  });
+
+  var v3 = new Vue({
+    el: '#v3',
+    data: {
+      msg3: '数据反转测试'
+    },
+    methods: {
+      reverseMsg: function () {
+        this.msg3 = this.msg3.split('').reverse().join('');
+      }
+    }
+  })
+
+  var v4 = new Vue({
+    el: '#v4',
+    data: {
+      msg4: 'filter demo'
+    },
+    filters: {
+      filterA: function (value) {
+        return value.length == 0 ? arguments[1] : (value.charAt(0).toUpperCase() + value.slice(1));
+      },
+      filterB: function (value) {
+        return value.length == 0 ? 'value is null' : (value.substr(0, value.length - 1) + value.charAt(value.length - 1).toUpperCase());
+      }
+    }
+  })
+
+  var v5 = new Vue({
+    el: '#v5',
+    data: {
+      url: 'https://cn.vuejs.org/v2/guide/index.html'
+    },
+    methods: {
+      clickMe: function () {
+        alert('点我干嘛，不懂点旁边那个啊！');
+      }
+    }
+  })
+
+  var v6 = new Vue({
+    el: '#v6',
+    data: {
+      show: true,
+      hello: 10
+    }
+  })
+
+  var v7 = new Vue({
+    el: '#v7',
+    data: {
+      codes: [
+        { code: 'javascript', name: 'Brendan Eich', url: "https://baike.baidu.com/item/javascript/321142?fr=aladdin" },
+        { code: 'vue', name: '尤雨溪', url: 'https://cn.vuejs.org/v2/guide/index.html' },
+        { code: 'java', name: 'James Gosling', url: 'https://baike.baidu.com/item/Java/85979?fr=aladdin' }
+      ],
+      obj: {
+        code: 'vue',
+        name: '尤雨溪'
+      },
+      count: 5
+    }
+  })
+
+  var v8 = new Vue({
+    el: '#v8',
+    data: {
+      message: 'hello world',
+      prefix: 'start',
+      suffix: 'end'
+    },
+    computed: {
+      // 计算属性的getter
+      reverseMessage: function () {
+        return this.message.split('').reverse().join('');
+      },
+      name: {
+        get: function () {
+          return this.prefix + ':' + this.suffix;
+        },
+        set: function (m) {
+          if (m.split(' ').length > 1) {
+            this.prefix = m.split(' ')[0];
+            this.suffix = m.split(' ')[1];
+          }
+        }
+      }
+    },
+    methods: {
+      reverseMessage2: function () {
+        return this.reverseMessage.split('').reverse().join('');
+      }
+    }
+  })
+
+  var v9 = new Vue({
+    el: '#v9',
+    data: {
+      counter: 5,
+      oval: 5,
+      nval: 5,
+      show: false,
+      meter: 0,
+      kilometer: 0,
+      calc: '',
+      goodsList: [
+        {
+          num: 1,
+          name: '华为mate20',
+          price: '4999',
+          count: 0
+        },
+        {
+          num: 1,
+          name: '小米mx2',
+          price: '3999',
+          count: 0
+        },
+        {
+          num: 1,
+          name: 'nubia z11',
+          price: '200',
+          count: 0
+        }
+      ]
+    },
+    methods: {
+      totalPrice: function(){
+        let total = 0;
+        for(let i = 0; i < this.goodsList.length; i++){
+          total += this.goodsList[i].count * this.goodsList[i].price;
+        }
+        return total;
+      }
+    },
+    watch: {
+      meter: function (nval, oval) {
+        this.kilometer = nval / 1000;
+        this.calc = nval + ' / 1000 = ' + this.kilometer;
+      },
+      kilometer: function (nval, oval) {
+        this.meter = nval * 1000;
+        this.calc = nval + ' * 1000 = ' + this.meter;
+      }
+    }
+  })
+  // 在counter值改变后调用该方法
+  v9.$watch('counter', function (nval, oval) {
+    v9.oval = oval;
+    v9.nval = nval;
+    v9.show = true;
+    setTimeout(function () {
+      v9.show = false;
+    }, 1000)
+  })
+
+  var v10 = new Vue({
+    el: '#v10',
+    data: {
+      activeColor: '#0ff',
+      activeColorObject: {
+        'active-color': true,
+        'active-color-red': true
+      },
+      red: 125,
+      green: 125,
+      blue: 125,
+      height: 100,
+      width: 100,
+      customStyle: {
+        background: '#00f',
+        width: '100px',
+        height: '100px'
+      }
+    },
+    computed: {
+      bindComputedColor: function(){
+        return {
+          'active-text': true,
+          'active-color': true
+        }
+      }
+    },
+    watch: {
+      red: function(nval, oval){
+        this.red = nval.trim() == '' || parseInt(nval) < 0 ? 0 : (parseInt(nval) > 255 ? 255 : nval);
+        this.customStyle.background = 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')';
+      },
+      green: function(nval, oval){
+        this.green = nval.trim() == '' || parseInt(nval) < 0 ? 0 : (parseInt(nval) > 255 ? 255 : nval);
+        this.customStyle.background = 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')';
+      },
+      blue: function(nval, oval){
+        this.blue = nval.trim() == '' || parseInt(nval) < 0 ? 0 : (parseInt(nval) > 255 ? 255 : nval);
+        this.customStyle.background = 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')';
+      },
+      width: function(nval, oval){
+        this.width = nval.trim() == '' || parseInt(nval) < 10 ? 10 : (parseInt(nval) > 300 ? 300 : nval);
+        this.customStyle.width = this.width + 'px';
+      },
+      height: function(nval, oval){
+        this.height = nval.trim() == '' || parseInt(nval) < 10 ? 10 : (parseInt(nval) > 300 ? 300 : nval);
+        this.customStyle.height = this.height + 'px';
+      }
+    }
+  })
+</script>
+
+</html>
