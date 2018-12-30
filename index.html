@@ -59,7 +59,7 @@
     <!-- 带参数过滤器 filterA('arg1', 'arg2') msg4将作为第1个参数,arg1作为第2个参数以此类推 -->
     <h2>{{ msg4 | filterA('hello world') | filterB }}</h2>
     <input type="text" v-model="msg4">
-  </div>
+  </div> 
   <hr>
   <div id="v5">
     <h1>5.缩写</h1>
@@ -130,7 +130,7 @@
   <div id="v9">
     <h1>9.监听属性</h1>
     <div>
-        通过 watch 来响应数据的变化
+      通过 watch 来响应数据的变化
       <p>计数：{{counter}}</p>
       <button @click="counter++" style="font-size:25px;">加</button>
       <button @click="counter--" style="font-size:25px;">减</button>
@@ -183,9 +183,47 @@
       R(0,255) <input type="number" v-model="red">
       G(0,255) <input type="number" v-model="green">
       B(0,255) <input type="number" v-model="blue"><br>
-      width(10,300): <input type="number" v-model="width">
-      height(10,300): <input type="number" v-model="height">
+      width(50,200): <input type="number" v-model="width">
+      height(50,200): <input type="number" v-model="height">
       <div :style="customStyle"></div>
+    </div>
+  </div>
+  <hr>
+  <div id="v11">
+    <h1>11.事件处理</h1>
+    <p>您点击了{{counter}}次</p>
+    <button @click="counter++">click me</button>
+    <div>
+      <h2>绑定方法</h2>
+      <p v-if="isTrigger">方法已被调用</p>
+      <button @click="triggerClick('hello vue')">触发方法调用</button>
+      <!-- 需要在内联语句处理器中访问原始的 DOM 事件。可以用特殊变量 $event 把它传入方法作为参数 -->
+      <button @click="triggerClick('hello vue event', $event)">触发方法调用</button>
+    </div>
+    <div>
+      <h2>事件修饰符</h2>
+      <!-- 阻止单击事件冒泡 -->
+      <button @click.stop="doStop">修饰stop</button>
+      <!-- 提交事件不再重载页面 -->
+      <form action="http://www.baidu.com" @submit.prevent="onSubmit">
+        <button type="submit">提交</button>
+      </form>
+      <p>注意：使用修饰符应注意顺序，如v-on:click.prevent.self（阻止所有的点击），v-on:click.self.prevent（阻止元素自身的点击）</p>
+      <button @click.stop.prevent="doThat">修饰符stop、prevent串联</button>
+      <!-- 添加事件监听器使用事件捕获模式 -->
+      <div @click.capture="doThis">事件监听器</div>
+      <!-- 只当事件在该元素本身（而不是子元素）触发时触发回调 -->
+      <div @click.self="doSelf">本身</div>
+      <!-- click事件只能点击一次，2.1.4版本新增 -->
+      <button @click.once="doOnce">{{clickOnce}}</button>
+      <p>2.3.0 Vue 还对应 addEventListener 中的 passive 选项提供了 .passive 修饰符</p>
+    </div>
+    <div>
+      <h2>按键修饰符</h2>
+      <!-- vue还可使用按键修饰符 -->
+      <a href="https://cn.vuejs.org/v2/guide/events.html#按键修饰符" target="_blank">按键修饰符</a>
+      <input type="text" @keyup.enter="submit">
+      <input type="text" @keyup.13="submit">
     </div>
   </div>
   <hr>
@@ -358,9 +396,9 @@
       ]
     },
     methods: {
-      totalPrice: function(){
+      totalPrice: function () {
         let total = 0;
-        for(let i = 0; i < this.goodsList.length; i++){
+        for (let i = 0; i < this.goodsList.length; i++) {
           total += this.goodsList[i].count * this.goodsList[i].price;
         }
         return total;
@@ -407,7 +445,7 @@
       }
     },
     computed: {
-      bindComputedColor: function(){
+      bindComputedColor: function () {
         return {
           'active-text': true,
           'active-color': true
@@ -415,25 +453,67 @@
       }
     },
     watch: {
-      red: function(nval, oval){
+      red: function (nval, oval) {
         this.red = nval.trim() == '' || parseInt(nval) < 0 ? 0 : (parseInt(nval) > 255 ? 255 : nval);
         this.customStyle.background = 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')';
       },
-      green: function(nval, oval){
+      green: function (nval, oval) {
         this.green = nval.trim() == '' || parseInt(nval) < 0 ? 0 : (parseInt(nval) > 255 ? 255 : nval);
         this.customStyle.background = 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')';
       },
-      blue: function(nval, oval){
+      blue: function (nval, oval) {
         this.blue = nval.trim() == '' || parseInt(nval) < 0 ? 0 : (parseInt(nval) > 255 ? 255 : nval);
         this.customStyle.background = 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')';
       },
-      width: function(nval, oval){
+      width: function (nval, oval) {
         this.width = nval.trim() == '' || parseInt(nval) < 10 ? 10 : (parseInt(nval) > 300 ? 300 : nval);
         this.customStyle.width = this.width + 'px';
       },
-      height: function(nval, oval){
+      height: function (nval, oval) {
         this.height = nval.trim() == '' || parseInt(nval) < 10 ? 10 : (parseInt(nval) > 300 ? 300 : nval);
         this.customStyle.height = this.height + 'px';
+      }
+    }
+  })
+
+  var v11 = new Vue({
+    el: '#v11',
+    data: {
+      counter: 0,
+      isTrigger: false,
+      clickOnce: '我只能点击一次'
+    },
+    methods: {
+      triggerClick: function(arg1, event){
+        this.isTrigger = true;
+        if(event){
+          // DOM原生事件，若使用javascript内联语句，将不调用DOM原生事件
+          alert(event.target.tagName);
+        } else{
+          alert(arg1);
+        }
+      },
+      doOnce: function(){
+        this.clickOnce = '我已经被点击过了';
+      },
+      doSelf: function(){
+        console.log('self');
+      },
+      doStop: function(){
+        console.log('stop');
+      },
+      doThat: function(){
+        console.log('that');
+      },
+      doThis: function(){
+        console.log('this');
+      },
+      onSubmit: function(){
+        console.log('表单提交');
+      },
+      submit: function(value){
+        console.log(value);
+        alert('You press the Enter!');
       }
     }
   })
