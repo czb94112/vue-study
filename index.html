@@ -227,6 +227,55 @@
     </div>
   </div>
   <hr>
+  <div id="v12">
+    <h1>12.表单</h1>
+    <h2>输入框</h2>
+    <div class="input-box">
+      <input type="text" v-model="message">
+      <p stylel="white-space: pre">input：{{message}}</p>
+      <textarea name="textMessage" id="textMessage" cols="30" rows="10" v-model="textMessage" placeholder="文本区"></textarea>
+      <p style="white-space: pre">textarea：{{textMessage}}</p>
+    </div>
+    <h2>复选框</h2>
+    <!-- vue会忽略表单元素的value、checked、selected特性的初始值，应使用data来声明初始值 -->
+    <div class="check-box">
+      <input id="zhangsan" type="checkbox" value="张三" :checked="checked" v-model="checkNames">
+      <label for="zhangsan">张三</label>
+      <input id="lisi" type="checkbox" value="李四" v-model="checkNames">
+      <label for="lisi">李四</label>
+      <input id="wangwu" type="checkbox" value="王五" v-model="checkNames">
+      <label for="wangwu">王五</label>
+      <p>已选项：{{checkNames}}</p>
+    </div>
+    <h2>单选框</h2>
+    <div class="radio-box">
+      <input id="zhangsan2" type="radio" value="张三" :checked="checked" v-model="radioName">
+      <label for="zhangsan2">张三</label>
+      <input id="lisi2" type="radio" value="李四" v-model="radioName">
+      <label for="lisi2">李四</label>
+      <input id="wangwu2" type="radio" value="王五" v-model="radioName">
+      <label for="wangwu2">王五</label>
+      <p>{{radioName}}</p>
+    </div>
+    <h2>选择框</h2>
+    <div class="select-box">
+      <select name="selectBox" id="selectBox" v-model="selectValue">
+        <option :value="selectItem.id" v-for="selectItem in selectList">
+          {{selectItem.name}}
+        </option>
+      </select>
+      <a :href="selectUrl" target="_blank">{{!selectName ? '未选择' : selectName}}</a>
+    </div>
+    <h2>修饰符</h2>
+    <div>
+      <p>.lazy将在change事件中同步：{{msg}}</p>
+      <input type="text" v-model.lazy="msg">
+      <p>.number将输入值转换为Number类型：{{age}}</p>
+      <input type="number" v-model.number="age">
+      <p>.trim在用户输入值前后去空格：{{trimMsg}}</p>
+      <input type="text" v-model.trim="trimMsg">
+    </div>
+  </div>
   <!-- built files will be auto injected -->
 </body>
 
@@ -514,6 +563,56 @@
       submit: function(value){
         console.log(value);
         alert('You press the Enter!');
+      }
+    }
+  })
+
+  var v12 = new Vue({
+    el: '#v12',
+    data: {
+      message: 'hello vue input',
+      textMessage: 'hello vue textarea',
+      checkNames:  ['李四'],
+      checked: true,
+      radioName: '张三',
+      selectValue: '1',
+      selectUrl: 'javascript:(0);',
+      selectName: '',
+      selectList: [
+        {
+          id: 1,
+          url: 'javascript:(0);',
+          name: '选择一个网址'
+        },
+        {
+          id: 2,
+          url: 'https://cn.vuejs.org/',
+          name: 'Vue'
+        },
+        {
+          id: 3,
+          url: 'http://www.baidu.com',
+          name: '百度'
+        }
+      ],
+      msg: 'hello world',
+      age: 18,
+      trimMsg: '   hello world     '
+    },
+    watch: {
+      selectValue: function(newVal, oldVal){
+        for(let i = 0; i < this.selectList.length; i++){
+          if(newVal === 1){
+            this.selectUrl = this.selectList[0].url;
+            this.selectName = '未选择';
+            break;
+          }
+          if(newVal === this.selectList[i].id){
+            this.selectUrl = this.selectList[i].url;
+            this.selectName = this.selectList[i].name;
+            break;
+          }
+        }
       }
     }
   })
