@@ -185,7 +185,7 @@
       B(0,255) <input type="number" v-model="blue"><br>
       width(50,200): <input type="number" v-model="width">
       height(50,200): <input type="number" v-model="height">
-      <div :style="customStyle"></div>
+      <div :style="customStyle">customStyle</div>
     </div>
   </div>
   <hr>
@@ -276,6 +276,20 @@
       <input type="text" v-model.trim="trimMsg">
     </div>
   </div>
+  <hr>
+    <div id="v13">
+      <h1>13.组件</h1>
+      <runoob message="hello"></runoob>
+      <input type="text" v-model="parentMsg">
+      <child-component :message="parentMsg"></child-component>
+      <ul>
+        <item-component v-for="item in items" :item_data="item"></item-component>
+      </ul>
+      <input type="text" v-model="verifyNum">
+      <input type="text" v-model="verifyStr">
+      <verify-component :verify_num="verifyNum" :verify_str="verifyStr"></verify-component>
+      <event-component :count="count"></event-component>
+    </div>
   <!-- built files will be auto injected -->
 </body>
 
@@ -476,21 +490,25 @@
 
   var v10 = new Vue({
     el: '#v10',
-    data: {
-      activeColor: '#0ff',
-      activeColorObject: {
-        'active-color': true,
-        'active-color-red': true
-      },
-      red: 125,
-      green: 125,
-      blue: 125,
-      height: 100,
-      width: 100,
-      customStyle: {
-        background: '#00f',
-        width: '100px',
-        height: '100px'
+    data: function(){
+      return {
+        activeColor: '#0ff',
+        activeColorObject: {
+          'active-color': true,
+          'active-color-red': true
+        },
+        red: 125,
+        green: 125,
+        blue: 125,
+        height: 100,
+        width: 100,
+        customStyle: {
+          background: 'rgb(125, 125, 125)',
+          width: '100px',
+          height: '100px',
+          lineHeight: '100px',
+          textAlign: 'center'
+        }
       }
     },
     computed: {
@@ -521,6 +539,7 @@
       height: function (nval, oval) {
         this.height = nval.trim() == '' || parseInt(nval) < 10 ? 10 : (parseInt(nval) > 300 ? 300 : nval);
         this.customStyle.height = this.height + 'px';
+        this.customStyle.lineHeight = this.height + 'px';
       }
     }
   })
@@ -613,6 +632,70 @@
             break;
           }
         }
+      }
+    }
+  })
+
+  // 自定义全局组件（组件名不允许大写）
+  // 父组件的数据需要通过 props 把数据传给子组件，子组件需要显式地用 props 选项声明 "prop"
+  Vue.component('runoob', {
+    // 声明props
+    props: ['message'],
+    template: '<h2>{{message}} 这是全局组件</h2>'
+  })
+  // 自定义局部组件
+  var Child = {
+    props: ['message'],
+    template: '<span>这是局部组件 {{message}}</span>'
+  }
+  var v13 = new Vue({
+    el: '#v13',
+    data: {
+      parentMsg: '父级组件内容',
+      items: [
+        {id:1, msg: '1111'},
+        {id:2, msg: '2222'},
+        {id:3, msg: '3333'}
+      ],
+      verifyNum: 1,
+      verifyStr: 'hello 2 world',
+      count: 0
+    },
+    components: {
+      'child-component': Child,
+      'item-component': {
+        props: ['item_data'],
+        template: '<li>{{item_data.id}}-{{ item_data.msg }}</li>'
+      },
+      'verify-component': {
+        props: {
+          // 验证数字
+          'verify_num': {
+            type: Number,
+            required: true,
+            default: 10
+          },
+          // 验证字符串与数字
+          'verify_str': [Number, String]
+        },
+        template: '<div>' +
+          '<p>num:{{verify_num}}</p>' +
+          '<p>num:{{verify_str}}</p>' +
+        '</div>',
+      },
+      'event-component': {
+        props: {
+          count: {
+            type: Number,
+            default: 0
+          }
+        },
+        template: `<div>
+          <h3>{{count}}</h3>
+          <h4 style="color:red">{{count <= 0 ? '不能小于0' : count >= 10 ? '不能超过10' : ''}}</h4>
+          <button @click="count++" :disabled="count >= 10">+</button>
+          <button @click="count--" :disabled="count == 0">-</button>
+        </div>`
       }
     }
   })
