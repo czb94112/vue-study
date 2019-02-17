@@ -4,7 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
   <title>demo1</title>
   <style>
     .active-color{
@@ -24,6 +25,9 @@
       font-size: 18px;
       color: #999;
       cursor: pointer;
+    }
+    ._active {
+      color:red;
     }
   </style>
 </head>
@@ -300,6 +304,29 @@
       <div v-mydirective:hello.a.b="message"></div>
     </div>
   </div>
+  <hr>
+  <div id="v15">
+    <h1>15.路由</h1>
+    <p>
+      <!-- 使用router-link组件来导航 -->
+      <!-- 传入'to'属性来指定目标路由连接 -->
+      <!-- <router-link>默认会被渲染成一个'<a>'标签 -->
+      <!-- active-class 设定链接激活时的class，exact-active-class 链接被精确匹配的时候 -->
+      <router-link :to="toHome" :msg="msg" active-class="_active">Go too Home</router-link>
+
+      <!-- replace 点击时会调用router.replace()而不是router.push()，导航不会留下history记录 -->
+      <!-- event 声明用来触发导航的事件 -->
+      <router-link to="/foo" replace event="mouseover">Go too Foo</router-link>
+
+      <!-- append 在当前 (相对) 路径前添加基路径 -->
+      <!-- tag 指定渲染成某种标签 -->
+      <router-link to="/bar" tag="li">Go too Bar</router-link>
+    </p>
+    <!-- 路由出口 -->
+    <!-- 路由匹配到的组件渲染 -->
+    <router-view></router-view>
+  </div>
+  <hr>
   <!-- built files will be auto injected -->
 </body>
 
@@ -748,6 +775,41 @@
       }
     }
   })
+
+  // 15.路由
+  // 1.定义（路由）组件（可用import导入）
+  const Foo = {template: `<div>Foo</div>`}
+  const Bar = {template: `<div>Bar</div>`}
+  const Home = {template: `<div>Home</div>`}
+
+  // 2.定义路由
+  // 每个路由映射到一个组件
+  const routes = [
+    {path: '/home', component: Home},
+    {path: '/foo', component: Foo},
+    {path: '/bar', component: Bar},
+  ];
+
+  // 3.创建router示例
+  const router = new VueRouter({
+    routes // 缩写，相当于routes:routes
+  })
+
+  // 4.创建和挂载根实例
+  const v15 = new Vue({
+    router,
+    data: {
+      toHome: {
+        path: '/home',
+        params: {
+          id: 1001
+        },
+        query: {
+          queryId: 1002
+        }
+      },
+    }
+  }).$mount('#v15');
 </script>
 
 </html>
