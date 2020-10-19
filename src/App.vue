@@ -7,7 +7,7 @@
 </template>
 
 <script>
-  // 导入组件2
+  // 导入组件1
   import Hello from "./components/Hello";
   
   export default {
